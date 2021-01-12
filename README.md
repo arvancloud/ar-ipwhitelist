@@ -21,7 +21,7 @@ Firewall: [YOUR INPUT]
 
 Also, you can pass the firewall name in arguments:
 ```sh
-src/ar-whatlister.sh ufw
+src/ar-whitelister.sh ufw
 ``` 
 
 ## Auto-update
