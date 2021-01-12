@@ -9,8 +9,8 @@ fi
 # Use the first argument or Ask the user to select firewall
 if [[ -z $1 ]]; then
   echo "Select a firewall to add IPs:"
-  echo "   1) ufw"
-  echo "   2) csf"
+  echo "   1) UFW"
+  echo "   2) CSF"
   read -r -p "Firewall: " option
 else
   option=$1
