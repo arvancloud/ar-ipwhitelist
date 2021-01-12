@@ -24,18 +24,28 @@ clear
 # Process user input
 case "$option" in
 1 | ufw)
+  if [ ! -x "$(command -v ufw)" ]; then
+    echo "ufw is not installed."
+    exit 1
+  fi
+
   for IP in ${IPs}; do
     sudo ufw allow from "$IP" to any
   done
   ;;
 2 | csf)
+  if [ ! -x "$(command -v csf)" ]; then
+    echo "csf is not installed."
+    exit 1
+  fi
+
   for IP in ${IPs}; do
     sudo csf -a "$IP"
   done
   sudo csf -r
   ;;
 *)
-  echo "The selected firewall is not valid"
+  echo "The selected firewall is not valid."
   exit 1
   ;;
 esac
