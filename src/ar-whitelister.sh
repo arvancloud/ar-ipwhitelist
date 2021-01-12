@@ -16,7 +16,7 @@ else
 fi
 
 clear
-echo "Getting IPs..."
+echo "Downloading Arvancloud IPs list..."
 IPs=$(curl -s https://www.arvancloud.com/fa/ips.txt)
 clear
 
@@ -33,8 +33,8 @@ case "$option" in
   sudo csf -r
   ;;
 *)
-  echo "Invalid firewall"
-  exit
+  echo "The selected firewall is not valid"
+  exit 1
   ;;
 esac
 
