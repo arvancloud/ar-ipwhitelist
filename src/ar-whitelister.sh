@@ -6,6 +6,7 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
+# Use the first argument or Ask the user to select firewall
 if [[ -z $1 ]]; then
   echo "Select a firewall to add IPs:"
   echo "   1) ufw"
@@ -20,6 +21,7 @@ echo "Downloading Arvancloud IPs list..."
 IPs=$(curl -s https://www.arvancloud.com/fa/ips.txt)
 clear
 
+# Process user input
 case "$option" in
 1 | ufw)
   for IP in ${IPs}; do
