@@ -17,8 +17,19 @@ else
 fi
 
 clear
+
+IPsLink="https://www.arvancloud.com/fa/ips.txt"
+
 echo "Downloading Arvancloud IPs list..."
-IPs=$(curl -s https://www.arvancloud.com/fa/ips.txt)
+
+if [ ! -x "$(command -v curl)" ]; then
+  IPs=$(curl -s ${IPsLink})
+elif [ -x "$(command -v wget)" ]; then
+  IPs=$(wget -q -O - ${IPsLink})
+else
+  echo "curl or wget is required to run this script."
+  exit 1
+fi
 clear
 
 # Process user input
