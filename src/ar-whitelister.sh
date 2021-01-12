@@ -27,7 +27,7 @@ IPsLink="https://www.arvancloud.com/fa/ips.txt"
 
 echo "Downloading Arvancloud IPs list..."
 
-if [ ! -x "$(command -v curl)" ]; then
+if [ -x "$(command -v curl)" ]; then
   IPs=$(curl -s ${IPsLink})
 elif [ -x "$(command -v wget)" ]; then
   IPs=$(wget -q -O - ${IPsLink})
