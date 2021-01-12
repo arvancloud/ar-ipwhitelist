@@ -2,7 +2,7 @@
 
 # root access needed
 if [[ $EUID -ne 0 ]]; then
-  echo "This installer needs to be run with superuser privileges."
+  echo "This script needs to be run with superuser privileges."
   exit 1
 fi
 
