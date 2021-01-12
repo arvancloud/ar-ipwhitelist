@@ -43,6 +43,7 @@ case "$option" in
   for IP in ${IPs}; do
     sudo ufw allow from "$IP" to any
   done
+  sudo ufw reload
   ;;
 2 | csf)
   if [ ! -x "$(command -v csf)" ]; then
