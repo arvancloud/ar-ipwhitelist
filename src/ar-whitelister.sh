@@ -16,6 +16,7 @@ if [[ -z $1 ]]; then
   echo "Select a firewall to add IPs:"
   echo "   1) UFW"
   echo "   2) CSF"
+  echo "   3) firewalld"
   read -r -p "Firewall: " option
 else
   option=$1
@@ -57,6 +58,17 @@ case "$option" in
     sudo csf -a "$IP"
   done
   sudo csf -r
+  ;;
+3 | firewalld)
+  if [ ! -x "$(command -v firewall-cmd)" ]; then
+    abort "firewalld is not installed."
+  fi
+
+  for IP in ${IPs}; do
+    sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address='"$IP"' port port=80 protocol="tcp" accept'
+    sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address='"$IP"' port port=443 protocol="tcp" accept'
+  done
+  sudo firewall-cmd --reload
   ;;
 *)
   abort "The selected firewall is not valid."

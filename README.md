@@ -10,12 +10,12 @@ Also, The bash script can be scheduled to update firewall rules automatically.
 
 ## How to use
 
-1. Run the script
-2. Select your firewall from the list
+Just run the script and select your firewall from the list
 ```sh
 Select a firewall to add IPs:
    1) UFW
    2) CSF
+   3) firewalld
 Firewall: [YOUR INPUT]
 ```
 
@@ -24,7 +24,7 @@ Also, you can pass the firewall name in arguments:
 src/ar-whitelister.sh ufw
 ``` 
 
-## Auto-update
+### Auto-update
 
 You can create a cronjob to update the rules automatically.
 
@@ -46,6 +46,7 @@ These firewalls are supported currently:
 
 * UFW
 * CSF
+* firewalld
 
 ### How to add more firewalls
 
