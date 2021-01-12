@@ -50,4 +50,4 @@ case "$option" in
   ;;
 esac
 
-echo "DONE"
+echo -e "\033[0;32mDONE"
