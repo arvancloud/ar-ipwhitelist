@@ -1,7 +1,7 @@
 # ar-ipwhitelist
 
 <p align="center">
-    <img alt="preview gif" src="https://github.com/sh-sh-dev/ar-ipwhitelist/blob/main/preview.gif?raw=true">
+    <img alt="preview gif" src="https://github.com/sh-sh-dev/ar-ipwhitelist/raw/main/preview.gif">
 </p>
 
 This project modifies your firewall configuration to allow Arvancloud's CDN network access to your server.
