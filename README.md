@@ -1,5 +1,9 @@
 # ar-ipwhitelist
 
+<p align="center">
+    <img alt="preview gif" src="https://github.com/sh-sh-dev/ar-ipwhitelist/blob/main/preview.gif?raw=true">
+</p>
+
 This project modifies your firewall configuration to allow Arvancloud's CDN network access to your server.
 
 Also, The bash script can be scheduled to update firewall rules automatically.
