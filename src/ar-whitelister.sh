@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 
+# Show an error and exit
+abort() {
+  echo "$1"
+  exit 1
+}
+
 # root access needed
 if [[ $EUID -ne 0 ]]; then
-  echo "This script needs to be run with superuser privileges."
-  exit 1
+  abort "This script needs to be run with superuser privileges."
 fi
 
 # Use the first argument or Ask the user to select firewall
@@ -27,8 +32,7 @@ if [ ! -x "$(command -v curl)" ]; then
 elif [ -x "$(command -v wget)" ]; then
   IPs=$(wget -q -O - ${IPsLink})
 else
-  echo "curl or wget is required to run this script."
-  exit 1
+  abort "curl or wget is required to run this script."
 fi
 clear
 
@@ -36,8 +40,7 @@ clear
 case "$option" in
 1 | ufw)
   if [ ! -x "$(command -v ufw)" ]; then
-    echo "ufw is not installed."
-    exit 1
+    abort "ufw is not installed."
   fi
 
   for IP in ${IPs}; do
@@ -47,8 +50,7 @@ case "$option" in
   ;;
 2 | csf)
   if [ ! -x "$(command -v csf)" ]; then
-    echo "csf is not installed."
-    exit 1
+    abort "csf is not installed."
   fi
 
   for IP in ${IPs}; do
@@ -57,8 +59,7 @@ case "$option" in
   sudo csf -r
   ;;
 *)
-  echo "The selected firewall is not valid."
-  exit 1
+  abort "The selected firewall is not valid."
   ;;
 esac
 
