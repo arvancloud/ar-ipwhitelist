@@ -14,8 +14,8 @@ Also, The bash script can be scheduled to update firewall rules automatically.
 2. Select your firewall from the list
 ```sh
 Select a firewall to add IPs:
-   1) ufw
-   2) csf
+   1) UFW
+   2) CSF
 Firewall: [YOUR INPUT]
 ```
 
