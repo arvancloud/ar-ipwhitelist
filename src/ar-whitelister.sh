@@ -31,7 +31,7 @@ IPsFile=$(mktemp /tmp/ar-ips.XXXXXX)
 # Delete the temp file if the script stopped for any reason
 trap 'rm -f ${IPsFile}' 0 2 3 15
 
-if [[ ! -x "$(command -v curl)" ]]; then
+if [[ -x "$(command -v curl)" ]]; then
   downloadStatus=$(curl "${IPsLink}" -o "${IPsFile}" -L -s -w "%{http_code}\n")
 elif [[ -x "$(command -v wget)" ]]; then
   downloadStatus=$(wget "${IPsLink}" -O "${IPsFile}" --server-response 2>&1 | awk '/^  HTTP/{print $2}' | tail -n1)
