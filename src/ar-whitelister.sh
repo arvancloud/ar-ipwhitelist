@@ -37,10 +37,12 @@ else
 fi
 clear
 
+echo "Adding IPs to the selected Firewall"
+
 # Process user input
 case "$option" in
 1 | ufw)
-  if [ ! -x "$(command -v ufw)" ]; then
+  if [[ ! -x "$(command -v ufw)" ]]; then
     abort "ufw is not installed."
   fi
 
@@ -50,7 +52,7 @@ case "$option" in
   sudo ufw reload
   ;;
 2 | csf)
-  if [ ! -x "$(command -v csf)" ]; then
+  if [[ ! -x "$(command -v csf)" ]]; then
     abort "csf is not installed."
   fi
 
@@ -60,7 +62,7 @@ case "$option" in
   sudo csf -r
   ;;
 3 | firewalld)
-  if [ ! -x "$(command -v firewall-cmd)" ]; then
+  if [[ ! -x "$(command -v firewall-cmd)" ]]; then
     abort "firewalld is not installed."
   fi
 
