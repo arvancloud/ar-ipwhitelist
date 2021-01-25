@@ -24,23 +24,35 @@ fi
 
 clear
 
-IPsLink="https://www.arvancloud.com/fa/ips.txt"
-
 echo "Downloading Arvancloud IPs list..."
 
-if [ -x "$(command -v curl)" ]; then
-  IPs=$(curl -s ${IPsLink})
-elif [ -x "$(command -v wget)" ]; then
-  IPs=$(wget -q -O - ${IPsLink})
+IPsLink="https://www.arvancloud.com/fa/ips.txt"
+IPsFile=$(mktemp /tmp/ar-ips.XXXXXX)
+# Delete the temp file if the script stopped for any reason
+trap 'rm -f ${IPsFile}' 0 2 3 15
+
+if [[ -x "$(command -v curl)" ]]; then
+  downloadStatus=$(curl "${IPsLink}" -o "${IPsFile}" -L -s -w "%{http_code}\n")
+elif [[ -x "$(command -v wget)" ]]; then
+  downloadStatus=$(wget "${IPsLink}" -O "${IPsFile}" --server-response 2>&1 | awk '/^  HTTP/{print $2}' | tail -n1)
 else
   abort "curl or wget is required to run this script."
 fi
+
+if [[ "$downloadStatus" -ne 200 ]]; then
+  abort "Downloading the IP list wasn't successful. status code: ${downloadStatus}"
+else
+  IPs=$(cat "$IPsFile")
+fi
+
 clear
+
+echo "Adding IPs to the selected Firewall"
 
 # Process user input
 case "$option" in
 1 | ufw)
-  if [ ! -x "$(command -v ufw)" ]; then
+  if [[ ! -x "$(command -v ufw)" ]]; then
     abort "ufw is not installed."
   fi
 
@@ -50,7 +62,7 @@ case "$option" in
   sudo ufw reload
   ;;
 2 | csf)
-  if [ ! -x "$(command -v csf)" ]; then
+  if [[ ! -x "$(command -v csf)" ]]; then
     abort "csf is not installed."
   fi
 
@@ -60,7 +72,7 @@ case "$option" in
   sudo csf -r
   ;;
 3 | firewalld)
-  if [ ! -x "$(command -v firewall-cmd)" ]; then
+  if [[ ! -x "$(command -v firewall-cmd)" ]]; then
     abort "firewalld is not installed."
   fi
 
