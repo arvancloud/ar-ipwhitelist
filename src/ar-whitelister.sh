@@ -17,6 +17,7 @@ if [[ -z $1 ]]; then
   echo "   1) UFW"
   echo "   2) CSF"
   echo "   3) firewalld"
+  echo "   4) iptables"
   read -r -p "Firewall: " option
 else
   option=$1
@@ -81,6 +82,15 @@ case "$option" in
     sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address='"$IP"' port port=443 protocol="tcp" accept'
   done
   sudo firewall-cmd --reload
+  ;;
+4 | iptables)
+  if [[ ! -x "$(command -v iptables)" ]]; then
+    abort "iptables is not installed."
+  fi
+
+  for IP in ${IPs}; do
+    sudo iptables -A INPUT -s "$IP" -j ACCEPT
+  done
   ;;
 *)
   abort "The selected firewall is not valid."
