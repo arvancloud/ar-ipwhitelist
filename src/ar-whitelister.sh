@@ -103,6 +103,7 @@ case "$option" in
   fi
   sudo ipset list | grep -q "arvancloud-ipset" ; greprc=$?
   if [[ "$greprc" -eq 0 ]]; then
+    sudo iptables -D INPUT -m set --match-set arvancloud-ipset src -j ACCEPT || true
     sudo ipset destroy arvancloud-ipset
   fi
 
