@@ -101,7 +101,7 @@ case "$option" in
   if [[ ! -x "$(command -v iptables)" ]]; then
     abort "iptables is not installed."
   fi
-  sudo ipset list | grep -q "arvancloud-ipset" ; greprc=$
+  sudo ipset list | grep -q "arvancloud-ipset" ; greprc=$?
   if [[ "$greprc" -eq 0 ]]; then
     sudo ipset destroy arvancloud-ipset
   fi
