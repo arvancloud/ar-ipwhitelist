@@ -17,6 +17,7 @@ Select a firewall to add IPs:
    2) CSF
    3) firewalld
    4) iptables
+   5) ipset+iptables
 Firewall: [YOUR INPUT]
 ```
 
@@ -49,6 +50,7 @@ These firewalls are supported currently:
 * CSF
 * firewalld
 * iptables
+* ipset+iptables
 
 ### How to add more firewalls
 
