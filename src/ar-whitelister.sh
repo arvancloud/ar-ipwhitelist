@@ -103,7 +103,8 @@ case "$option" in
   fi
   sudo ipset list | grep -q "arvancloud-ipset" ; greprc=$?
   if [[ "$greprc" -eq 0 ]]; then
-    sudo iptables -D INPUT -m set --match-set arvancloud-ipset src -j ACCEPT || true
+    sudo iptables -D INPUT -m set --match-set arvancloud-ipset src -j ACCEPT 2>/dev/null
+    sleep 0.5
     sudo ipset destroy arvancloud-ipset
   fi
 
@@ -111,7 +112,10 @@ case "$option" in
   for IP in ${IPs}; do
     ipset add arvancloud-ipset "$IP"
   done
-  sudo iptables -C INPUT -m set --match-set arvancloud-ipset src -j ACCEPT || sudo iptables -A INPUT -m set --match-set arvancloud-ipset src -j ACCEPT
+  sudo iptables -nvL | grep -q "arvancloud-ipset"; exitcode=$?
+  if [[ "$exitcode" -eq 1 ]]; then
+    sudo iptables -I INPUT -m set --match-set arvancloud-ipset src -j ACCEPT
+  fi
   ;;
 *)
   abort "The selected firewall is not valid."
