@@ -18,6 +18,7 @@ if [[ -z $1 ]]; then
   echo "   2) CSF"
   echo "   3) firewalld"
   echo "   4) iptables"
+  echo "   5) ipset+iptables"
   read -r -p "Firewall: " option
 else
   option=$1
@@ -91,6 +92,25 @@ case "$option" in
   for IP in ${IPs}; do
     sudo iptables -A INPUT -s "$IP" -j ACCEPT
   done
+  ;;
+
+5 | ipset)
+  if [[ ! -x "$(command -v ipset)" ]]; then
+    abort "ipset is not installed."
+  fi
+  if [[ ! -x "$(command -v iptables)" ]]; then
+    abort "iptables is not installed."
+  fi
+  sudo ipset list | grep -q "arvancloud-ipset" ; greprc=$
+  if [[ "$greprc" -eq 0 ]]; then
+    sudo ipset destroy arvancloud-ipset
+  fi
+
+  ipset create arvancloud-ipset hash:net
+  for IP in ${IPs}; do
+    ipset add arvancloud-ipset "$IP"
+  done
+  sudo iptables -C INPUT -m set --match-set arvancloud-ipset src -j ACCEPT || sudo iptables -A INPUT -m set --match-set arvancloud-ipset src -j ACCEPT
   ;;
 *)
   abort "The selected firewall is not valid."
