@@ -18,6 +18,7 @@ Select a firewall to add IPs:
    3) firewalld
    4) iptables
    5) ipset+iptables
+   6) nftables
 Firewall: [YOUR INPUT]
 ```
 
@@ -51,6 +52,7 @@ These firewalls are supported currently:
 * firewalld
 * iptables
 * ipset+iptables
+* nftables
 
 ### How to add more firewalls
 

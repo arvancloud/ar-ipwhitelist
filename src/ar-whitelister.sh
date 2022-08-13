@@ -19,6 +19,7 @@ if [[ -z $1 ]]; then
   echo "   3) firewalld"
   echo "   4) iptables"
   echo "   5) ipset+iptables"
+  echo "   6) nftables"
   read -r -p "Firewall: " option
 else
   option=$1
@@ -116,6 +117,18 @@ case "$option" in
   if [[ "$exitcode" -eq 1 ]]; then
     sudo iptables -I INPUT -m set --match-set arvancloud-ipset src -j ACCEPT
   fi
+  ;;
+6 | nftables)
+  if [[ ! -x "$(command -v nft)" ]]; then
+    abort "nftables is not installed."
+  fi
+  # create filter table
+  nft add table inet filter
+  # create a chain for arvancloud
+  sudo nft add chain inet filter arvancloud '{ type filter hook input priority 0; }'
+  # concat all IPs to a string and remove blank line and separate with comma
+  IPsString=$(echo "$IPs" | tr '\n' ',' | sed 's/,$//')
+  sudo nft insert rule inet filter arvancloud counter ip saddr "{ $IPsString }" accept
   ;;
 *)
   abort "The selected firewall is not valid."
