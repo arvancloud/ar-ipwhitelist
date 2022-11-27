@@ -29,7 +29,7 @@ clear
 
 echo "Downloading Arvancloud IPs list..."
 
-IPsLink="https://www.arvancloud.com/fa/ips.txt"
+IPsLink="https://www.arvancloud.ir/fa/ips.txt"
 IPsFile=$(mktemp /tmp/ar-ips.XXXXXX)
 # Delete the temp file if the script stopped for any reason
 trap 'rm -f ${IPsFile}' 0 2 3 15
