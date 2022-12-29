@@ -108,9 +108,16 @@ case "$option" in
     abort "firewalld is not installed."
   fi
 
+  warn "Delete old arvancloud zone if exist"
+
+  if [[ $(sudo firewall-cmd --permanent --list-all-zones | grep arvancloud) ]]; then sudo firewall-cmd --permanent --delete-zone=arvancloud; fi
+  sudo firewall-cmd --permanent --new-zone=arvancloud
+
+  info "Adding new arvancloud zone"
+
   for IP in ${IPs}; do
-    sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address='"$IP"' port port=80 protocol="tcp" accept'
-    sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address='"$IP"' port port=443 protocol="tcp" accept'
+    sudo firewall-cmd --permanent --zone=arvancloud --add-rich-rule='rule family="ipv4" source address='"$IP"' port port=80 protocol="tcp" accept'
+    sudo firewall-cmd --permanent --zone=arvancloud --add-rich-rule='rule family="ipv4" source address='"$IP"' port port=443 protocol="tcp" accept'
   done
   sudo firewall-cmd --reload
   ;;
