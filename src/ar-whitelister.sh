@@ -76,8 +76,14 @@ case "$option" in
     abort "ufw is not installed."
   fi
 
+  warn "Delete old arvancloud rules if exist"
+
+  ufw show added | awk '/arvancloud/{ gsub("ufw","ufw delete",$0); system($0)}'
+
+  info "Adding new arvancloud rules"
+
   for IP in ${IPs}; do
-    sudo ufw allow from "$IP" to any
+    sudo ufw allow from "$IP" to any comment "arvancloud"
   done
   sudo ufw reload
   ;;
