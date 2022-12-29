@@ -143,6 +143,8 @@ case "$option" in
   if [[ ! -x "$(command -v iptables)" ]]; then
     abort "iptables is not installed."
   fi
+
+  warn "Delete old arvancloud ipset if exist"
   sudo ipset list | grep -q "arvancloud-ipset" ; greprc=$?
   if [[ "$greprc" -eq 0 ]]; then
     sudo iptables -D INPUT -m set --match-set arvancloud-ipset src -j ACCEPT 2>/dev/null
@@ -150,6 +152,7 @@ case "$option" in
     sudo ipset destroy arvancloud-ipset
   fi
 
+  info "Adding new arvancloud ipset"
   ipset create arvancloud-ipset hash:net
   for IP in ${IPs}; do
     ipset add arvancloud-ipset "$IP"
