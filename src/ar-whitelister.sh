@@ -1,9 +1,28 @@
 #!/usr/bin/env bash
 
+# color codes
+green='\033[0;32m'
+red='\033[0;31m'
+yellow='\033[0;33m'
+cyan='\033[0;36m'
+reset='\033[0m'
+
 # Show an error and exit
 abort() {
-  echo "$1"
+  echo -e "${red}--X $1 ${reset}"
   exit 1
+}
+
+info() {
+  echo -e "${cyan}--> $1 ${reset}"
+}
+
+warn() {
+  echo -e "${yellow}--! $1 ${reset}"
+}
+
+success() {
+  echo -e "${green}--:) $1 ${reset}"
 }
 
 # root access needed
@@ -27,7 +46,7 @@ fi
 
 clear
 
-echo "Downloading Arvancloud IPs list..."
+info "Downloading Arvancloud IPs list..."
 
 IPsLink="https://www.arvancloud.ir/fa/ips.txt"
 IPsFile=$(mktemp /tmp/ar-ips.XXXXXX)
@@ -48,9 +67,7 @@ else
   IPs=$(cat "$IPsFile")
 fi
 
-clear
-
-echo "Adding IPs to the selected Firewall"
+info "Adding IPs to the selected Firewall"
 
 # Process user input
 case "$option" in
@@ -135,4 +152,4 @@ case "$option" in
   ;;
 esac
 
-echo -e "\033[0;32mDONE"
+success "\nDONE!"
