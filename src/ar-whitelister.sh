@@ -126,8 +126,13 @@ case "$option" in
     abort "iptables is not installed."
   fi
 
+  CURRENT_RULES=$(iptables --line-number -nL INPUT | grep comment_here | awk '{print $1}' | tac)
+  for rule in $CURRENT_RULES; do
+    sudo iptables -D INPUT $rule
+  done
+
   for IP in ${IPs}; do
-    sudo iptables -A INPUT -s "$IP" -j ACCEPT
+    sudo iptables -A INPUT -s "$IP" -m comment --comment "arvancloud" -j ACCEPT
   done
   ;;
 
