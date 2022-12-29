@@ -113,9 +113,9 @@ case "$option" in
 
   warn "Delete old arvancloud zone if exist"
   if [[ $(sudo firewall-cmd --permanent --list-all-zones | grep arvancloud) ]]; then sudo firewall-cmd --permanent --delete-zone=arvancloud; fi
-  sudo firewall-cmd --permanent --new-zone=arvancloud
 
   info "Adding new arvancloud zone"
+  sudo firewall-cmd --permanent --new-zone=arvancloud
   for IP in ${IPs}; do
     sudo firewall-cmd --permanent --zone=arvancloud --add-rich-rule='rule family="ipv4" source address='"$IP"' port port=80 protocol="tcp" accept'
     sudo firewall-cmd --permanent --zone=arvancloud --add-rich-rule='rule family="ipv4" source address='"$IP"' port port=443 protocol="tcp" accept'
@@ -173,7 +173,7 @@ case "$option" in
   nft add table inet filter
 
   warn "Delete old arvancloud chain if exist"
-  sudo nft delete chain inet filter arvancloud
+  if [[ $(sudo nft list ruleset | grep arvancloud) ]]; then sudo nft delete chain inet filter arvancloud; fi
   
   info "Adding new arvancloud chain"
   sudo nft add chain inet filter arvancloud '{ type filter hook input priority 0; }'
