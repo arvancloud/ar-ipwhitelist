@@ -171,4 +171,4 @@ case "$option" in
   ;;
 esac
 
-success "\nDONE!"
+success "DONE!"
