@@ -174,7 +174,7 @@ case "$option" in
 
   warn "Delete old arvancloud chain if exist"
   if [[ $(sudo nft list ruleset | grep arvancloud) ]]; then sudo nft delete chain inet filter arvancloud; fi
-  
+
   info "Adding new arvancloud chain"
   sudo nft add chain inet filter arvancloud '{ type filter hook input priority 0; }'
   # concat all IPs to a string and remove blank line and separate with comma
