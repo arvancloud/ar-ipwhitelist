@@ -92,6 +92,12 @@ case "$option" in
     abort "csf is not installed."
   fi
 
+  warn "Delete old arvancloud rules if exist"
+
+  awk '!/arvancloud/' /etc/csf/csf.allow > csf.t && mv csf.t /etc/csf/csf.allow
+
+  info "Adding new arvancloud rules"
+
   for IP in ${IPs}; do
     sudo csf -a "$IP"
   done
