@@ -7,25 +7,28 @@ yellow='\033[0;33m'
 cyan='\033[0;36m'
 reset='\033[0m'
 
-# Show an error and exit
+# Show error message and exit
 abort() {
   echo -e "${red}--X $1 ${reset}"
   exit 1
 }
 
+# Show information message
 info() {
   echo -e "${cyan}--> $1 ${reset}"
 }
 
+# Show warning message
 warn() {
   echo -e "${yellow}--! $1 ${reset}"
 }
 
+# Show success message
 success() {
   echo -e "${green}--:) $1 ${reset}"
 }
 
-# root access needed
+# Check root access
 if [[ $EUID -ne 0 ]]; then
   abort "This script needs to be run with superuser privileges."
 fi
@@ -85,6 +88,7 @@ case "$option" in
   for IP in ${IPs}; do
     sudo ufw allow from "$IP" to any comment "arvancloud"
   done
+
   sudo ufw reload
   ;;
 2 | csf)
@@ -93,14 +97,13 @@ case "$option" in
   fi
 
   warn "Delete old arvancloud rules if exist"
-
   awk '!/arvancloud/' /etc/csf/csf.allow > csf.t && mv csf.t /etc/csf/csf.allow
 
   info "Adding new arvancloud rules"
-
   for IP in ${IPs}; do
     sudo csf -a "$IP"
   done
+
   sudo csf -r
   ;;
 3 | firewalld)
@@ -109,16 +112,15 @@ case "$option" in
   fi
 
   warn "Delete old arvancloud zone if exist"
-
   if [[ $(sudo firewall-cmd --permanent --list-all-zones | grep arvancloud) ]]; then sudo firewall-cmd --permanent --delete-zone=arvancloud; fi
   sudo firewall-cmd --permanent --new-zone=arvancloud
 
   info "Adding new arvancloud zone"
-
   for IP in ${IPs}; do
     sudo firewall-cmd --permanent --zone=arvancloud --add-rich-rule='rule family="ipv4" source address='"$IP"' port port=80 protocol="tcp" accept'
     sudo firewall-cmd --permanent --zone=arvancloud --add-rich-rule='rule family="ipv4" source address='"$IP"' port port=443 protocol="tcp" accept'
   done
+
   sudo firewall-cmd --reload
   ;;
 4 | iptables)
@@ -126,16 +128,17 @@ case "$option" in
     abort "iptables is not installed."
   fi
 
+  warn "Delete old arvancloud rules if exist"
   CURRENT_RULES=$(iptables --line-number -nL INPUT | grep comment_here | awk '{print $1}' | tac)
   for rule in $CURRENT_RULES; do
     sudo iptables -D INPUT $rule
   done
 
+  info "Adding new arvancloud rules"
   for IP in ${IPs}; do
     sudo iptables -A INPUT -s "$IP" -m comment --comment "arvancloud" -j ACCEPT
   done
   ;;
-
 5 | ipset)
   if [[ ! -x "$(command -v ipset)" ]]; then
     abort "ipset is not installed."
