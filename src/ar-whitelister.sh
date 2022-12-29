@@ -168,7 +168,11 @@ case "$option" in
   fi
   # create filter table
   nft add table inet filter
-  # create a chain for arvancloud
+
+  warn "Delete old arvancloud chain if exist"
+  sudo nft delete chain inet filter arvancloud
+  
+  info "Adding new arvancloud chain"
   sudo nft add chain inet filter arvancloud '{ type filter hook input priority 0; }'
   # concat all IPs to a string and remove blank line and separate with comma
   IPsString=$(echo "$IPs" | tr '\n' ',' | sed 's/,$//')
