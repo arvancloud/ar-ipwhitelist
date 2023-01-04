@@ -1,12 +1,34 @@
 #!/usr/bin/env bash
 
-# Show an error and exit
+# color codes
+green='\033[0;32m'
+red='\033[0;31m'
+yellow='\033[0;33m'
+cyan='\033[0;36m'
+reset='\033[0m'
+
+# Show error message and exit
 abort() {
-  echo "$1"
+  echo -e "${red}--X $1 ${reset}"
   exit 1
 }
 
-# root access needed
+# Show information message
+info() {
+  echo -e "${cyan}--> $1 ${reset}"
+}
+
+# Show warning message
+warn() {
+  echo -e "${yellow}--! $1 ${reset}"
+}
+
+# Show success message
+success() {
+  echo -e "${green}--:) $1 ${reset}"
+}
+
+# Check root access
 if [[ $EUID -ne 0 ]]; then
   abort "This script needs to be run with superuser privileges."
 fi
@@ -27,7 +49,7 @@ fi
 
 clear
 
-echo "Downloading Arvancloud IPs list..."
+info "Downloading Arvancloud IPs list..."
 
 IPsLink="https://www.arvancloud.ir/fa/ips.txt"
 IPsFile=$(mktemp /tmp/ar-ips.XXXXXX)
@@ -48,9 +70,7 @@ else
   IPs=$(cat "$IPsFile")
 fi
 
-clear
-
-echo "Adding IPs to the selected Firewall"
+info "Adding IPs to the selected Firewall"
 
 # Process user input
 case "$option" in
@@ -59,9 +79,16 @@ case "$option" in
     abort "ufw is not installed."
   fi
 
+  warn "Delete old arvancloud rules if exist"
+
+  ufw show added | awk '/arvancloud/{ gsub("ufw","ufw delete",$0); system($0)}'
+
+  info "Adding new arvancloud rules"
+
   for IP in ${IPs}; do
-    sudo ufw allow from "$IP" to any
+    sudo ufw allow from "$IP" to any comment "arvancloud"
   done
+
   sudo ufw reload
   ;;
 2 | csf)
@@ -69,9 +96,14 @@ case "$option" in
     abort "csf is not installed."
   fi
 
+  warn "Delete old arvancloud rules if exist"
+  awk '!/arvancloud/' /etc/csf/csf.allow > csf.t && mv csf.t /etc/csf/csf.allow
+
+  info "Adding new arvancloud rules"
   for IP in ${IPs}; do
     sudo csf -a "$IP"
   done
+
   sudo csf -r
   ;;
 3 | firewalld)
@@ -79,10 +111,16 @@ case "$option" in
     abort "firewalld is not installed."
   fi
 
+  warn "Delete old arvancloud zone if exist"
+  if [[ $(sudo firewall-cmd --permanent --list-all-zones | grep arvancloud) ]]; then sudo firewall-cmd --permanent --delete-zone=arvancloud; fi
+
+  info "Adding new arvancloud zone"
+  sudo firewall-cmd --permanent --new-zone=arvancloud
   for IP in ${IPs}; do
-    sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address='"$IP"' port port=80 protocol="tcp" accept'
-    sudo firewall-cmd --permanent --add-rich-rule='rule family="ipv4" source address='"$IP"' port port=443 protocol="tcp" accept'
+    sudo firewall-cmd --permanent --zone=arvancloud --add-rich-rule='rule family="ipv4" source address='"$IP"' port port=80 protocol="tcp" accept'
+    sudo firewall-cmd --permanent --zone=arvancloud --add-rich-rule='rule family="ipv4" source address='"$IP"' port port=443 protocol="tcp" accept'
   done
+
   sudo firewall-cmd --reload
   ;;
 4 | iptables)
@@ -90,11 +128,17 @@ case "$option" in
     abort "iptables is not installed."
   fi
 
+  warn "Delete old arvancloud rules if exist"
+  CURRENT_RULES=$(iptables --line-number -nL INPUT | grep comment_here | awk '{print $1}' | tac)
+  for rule in $CURRENT_RULES; do
+    sudo iptables -D INPUT $rule
+  done
+
+  info "Adding new arvancloud rules"
   for IP in ${IPs}; do
-    sudo iptables -A INPUT -s "$IP" -j ACCEPT
+    sudo iptables -A INPUT -s "$IP" -m comment --comment "arvancloud" -j ACCEPT
   done
   ;;
-
 5 | ipset)
   if [[ ! -x "$(command -v ipset)" ]]; then
     abort "ipset is not installed."
@@ -102,6 +146,8 @@ case "$option" in
   if [[ ! -x "$(command -v iptables)" ]]; then
     abort "iptables is not installed."
   fi
+
+  warn "Delete old arvancloud ipset if exist"
   sudo ipset list | grep -q "arvancloud-ipset" ; greprc=$?
   if [[ "$greprc" -eq 0 ]]; then
     sudo iptables -D INPUT -m set --match-set arvancloud-ipset src -j ACCEPT 2>/dev/null
@@ -109,6 +155,7 @@ case "$option" in
     sudo ipset destroy arvancloud-ipset
   fi
 
+  info "Adding new arvancloud ipset"
   ipset create arvancloud-ipset hash:net
   for IP in ${IPs}; do
     ipset add arvancloud-ipset "$IP"
@@ -124,7 +171,11 @@ case "$option" in
   fi
   # create filter table
   nft add table inet filter
-  # create a chain for arvancloud
+
+  warn "Delete old arvancloud chain if exist"
+  if [[ $(sudo nft list ruleset | grep arvancloud) ]]; then sudo nft delete chain inet filter arvancloud; fi
+
+  info "Adding new arvancloud chain"
   sudo nft add chain inet filter arvancloud '{ type filter hook input priority 0; }'
   # concat all IPs to a string and remove blank line and separate with comma
   IPsString=$(echo "$IPs" | tr '\n' ',' | sed 's/,$//')
@@ -135,4 +186,4 @@ case "$option" in
   ;;
 esac
 
-echo -e "\033[0;32mDONE"
+success "DONE!"

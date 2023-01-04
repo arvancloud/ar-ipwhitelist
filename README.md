@@ -11,7 +11,8 @@ Also, The bash script can be scheduled to update firewall rules automatically.
 ## How to use
 
 Just run the script and select your firewall from the list
-```sh
+
+```bash
 Select a firewall to add IPs:
    1) UFW
    2) CSF
@@ -23,9 +24,10 @@ Firewall: [YOUR INPUT]
 ```
 
 Also, you can pass the firewall name in arguments:
-```sh
+
+```bash
 src/ar-whitelister.sh ufw
-``` 
+```
 
 ### Auto-update
 
@@ -34,12 +36,14 @@ You can create a cronjob to update the rules automatically.
 Examples:
 
 * Update UFW rules every 6 hours
-```sh
+
+```bash
 0 */6 * * * /path/to/ar-whitelister.sh ufw >/dev/null 2>&1
 ```
 
 * Update CSF rules every day at 1:00
-```sh
+
+```bash
 0 1 * * * /path/to/ar-whitelister.sh csf >/dev/null 2>&1
 ```
 
@@ -57,5 +61,6 @@ These firewalls are supported currently:
 ### How to add more firewalls
 
 If you use a firewall that is not listed here, you can:
+
 * Create an issue
 * Send a pull request
