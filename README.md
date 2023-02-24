@@ -56,7 +56,7 @@ We currently support these firewalls:
 * ipset+iptables
 * nftables
 
-### How to add more firewalls
+### Need more?
 
 If you use a firewall that is not listed here, you can:
 
