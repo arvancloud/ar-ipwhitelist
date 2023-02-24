@@ -1,16 +1,14 @@
-# ar-ipwhitelist
+# ArvanCloud IP white-list
 
-<p align="center">
-    <img alt="preview gif" src="https://github.com/sh-sh-dev/ar-ipwhitelist/raw/main/preview.gif">
-</p>
+![logo](.github/logo.svg)
 
-This project modifies your firewall configuration to allow Arvancloud's CDN network access to your server.
+This project modifies your firewall configuration to allow ArvanCloud's CDN network access to your server.
 
-Also, The bash script can be scheduled to update firewall rules automatically.
+You can also schedule this script to update the firewall rules automatically.
 
 ## How to use
 
-Just run the script and select your firewall from the list
+Just run the script and select your firewall from the list:
 
 ```bash
 Select a firewall to add IPs:
@@ -23,7 +21,7 @@ Select a firewall to add IPs:
 Firewall: [YOUR INPUT]
 ```
 
-Also, you can pass the firewall name in arguments:
+Also, you can pass the firewall's name in arguments:
 
 ```bash
 src/ar-whitelister.sh ufw
@@ -49,7 +47,7 @@ Examples:
 
 ## Supported firewalls
 
-These firewalls are supported currently:
+We currently support these firewalls:
 
 * UFW
 * CSF
